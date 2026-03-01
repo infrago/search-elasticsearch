@@ -1,37 +1,49 @@
 # search-elasticsearch
 
-`search` 的 Elasticsearch 驱动。
+`search-elasticsearch` 是 `search` 模块的 `elasticsearch` 驱动。
 
-驱动名：`elasticsearch`（别名：`es`）
+## 安装
 
-## 使用
+```bash
+go get github.com/infrago/search@latest
+go get github.com/infrago/search-elasticsearch@latest
+```
+
+## 接入
 
 ```go
-import _ "github.com/infrago/search-elasticsearch"
+import (
+    _ "github.com/infrago/search"
+    _ "github.com/infrago/search-elasticsearch"
+    "github.com/infrago/infra"
+)
+
+func main() {
+    infra.Run()
+}
 ```
+
+## 配置示例
 
 ```toml
 [search]
 driver = "elasticsearch"
-prefix = "demo_"
-
-[search.setting]
-server = "http://127.0.0.1:9200"
-username = ""
-password = ""
-api_key = ""
 ```
 
-## 配置项
+## 公开 API（摘自源码）
 
-- `server`：Elasticsearch 地址
-- `username/password`：Basic Auth（可选）
-- `api_key`：API Key（可选，优先于 basic auth）
-- `prefix`：索引名前缀（可选）
-- `timeout`：HTTP 超时（例如 `5s`）
+- `func (d *elasticDriver) Connect(inst *search.Instance) (search.Connection, error)`
+- `func (c *elasticConnection) Open() error  { return nil }`
+- `func (c *elasticConnection) Close() error { return nil }`
+- `func (c *elasticConnection) Capabilities() search.Capabilities`
+- `func (c *elasticConnection) SyncIndex(name string, index search.Index) error`
+- `func (c *elasticConnection) Clear(name string) error`
+- `func (c *elasticConnection) Upsert(index string, rows []Map) error`
+- `func (c *elasticConnection) Delete(index string, ids []string) error`
+- `func (c *elasticConnection) Search(index string, query search.Query) (search.Result, error)`
+- `func (c *elasticConnection) Count(index string, query search.Query) (int64, error)`
 
-## 映射说明
+## 排错
 
-1. 统一 `Search DSL` 映射到 ES bool/filter/sort/aggs/highlight。
-2. `facets` 映射为 `terms aggregation`。
-3. `Upsert/Delete` 使用 `_bulk`。
+- driver 未生效：确认模块段 `driver` 值与驱动名一致
+- 连接失败：检查 endpoint/host/port/鉴权配置
