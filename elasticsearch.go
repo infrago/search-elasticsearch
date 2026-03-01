@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bamgoo/bamgoo"
-	. "github.com/bamgoo/base"
-	"github.com/bamgoo/search"
+	"github.com/infrago/infra"
+	. "github.com/infrago/base"
+	"github.com/infrago/search"
 )
 
 type elasticDriver struct{}
@@ -27,8 +27,8 @@ type elasticConnection struct {
 }
 
 func init() {
-	bamgoo.Register("elasticsearch", &elasticDriver{})
-	bamgoo.Register("es", &elasticDriver{})
+	infra.Register("elasticsearch", &elasticDriver{})
+	infra.Register("es", &elasticDriver{})
 }
 
 func (d *elasticDriver) Connect(inst *search.Instance) (search.Connection, error) {
